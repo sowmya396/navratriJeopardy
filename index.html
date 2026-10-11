@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navratri Trivia Fest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Kalam:wght@300;400;700&family=Mukta:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --crimson: #7A0016;
+            --vermilion: #D92525;
+            --marigold: #F29F05;
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --dark-bg: #2B0005;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Mukta', sans-serif;
+            background-color: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(122, 0, 22, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(217, 37, 37, 0.3) 0%, transparent 40%),
+                repeating-radial-gradient(circle at center, transparent 0, transparent 20px, rgba(255, 215, 0, 0.03) 21px, transparent 22px);
+            background-size: 100vw 100vh, 100vw 100vh, 60px 60px;
+            background-attachment: fixed;
+        }
+
+        .font-title { font-family: 'Cinzel Decorative', cursive; }
+        .font-hand { font-family: 'Kalam', cursive; }
+
+        /* Ornate borders and shadows */
+        .gold-border {
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+        
+        .gold-border-thick {
+            border: 6px solid var(--gold);
+            border-image: linear-gradient(to bottom right, #FFDF00, #B8860B, #FFDF00) 1;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .bg-festive-gradient {
+            background: linear-gradient(135deg, var(--crimson) 0%, #4A000A 100%);
+        }
+
+        .bg-vermilion-gradient {
+            background: linear-gradient(to bottom right, var(--vermilion), var(--crimson));
+        }
+
+        /* Buttons */
+        .btn-gold {
+            background: linear-gradient(to bottom, #FFF3B0, var(--gold), var(--dark-gold));
+            color: var(--dark-bg);
+            border: 2px solid #FFF;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .btn-gold:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 7px 14px rgba(255, 215, 0, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-marigold {
+            background: linear-gradient(to bottom, #FFC107, var(--marigold), #D84315);
+            color: #fff;
+            border: 2px solid var(--gold);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            transition: all 0.2s;
+        }
+        .btn-marigold:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(242, 159, 5, 0.6);
+        }
+
+        /* Board layout */
+        .jeopardy-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .theme-header {
+            background: linear-gradient(to bottom, var(--vermilion), var(--crimson));
+            color: var(--gold);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 10px;
+            font-size: 1.25rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            border: 2px solid var(--dark-gold);
+            border-radius: 8px 8px 0 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .question-tile {
+            background: rgba(122, 0, 22, 0.8);
+            backdrop-filter: blur(5px);
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 700;
+            height: 100px;
+            cursor: pointer;
+            border: 2px solid var(--dark-gold);
+            border-radius: 4px;
+            transition: all 0.3s;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-tile::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,215,0,0.2), transparent);
+            transform: skewX(-25deg);
+            transition: 0.5s;
+        }
+
+        .question-tile:hover:not(.disabled)::before {
+            left: 200%;
+        }
+
+        .question-tile:hover:not(.disabled) {
+            transform: scale(1.03) translateY(-2px);
+            background: rgba(217, 37, 37, 0.9);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+            color: #fff;
+            border-color: var(--gold);
+            z-index: 10;
+        }
+
+        .question-tile.disabled {
+            background: rgba(20, 0, 5, 0.6);
+            color: transparent;
+            border-color: #330000;
+            cursor: default;
+            text-shadow: none;
+            box-shadow: none;
+        }
+
+        /* Scoreboard */
+        .team-card {
+            background: linear-gradient(180deg, var(--crimson) 0%, var(--dark-bg) 100%);
+            border: 2px solid var(--dark-gold);
+            border-radius: 12px;
+            padding: 10px 20px;
+            text-align: center;
+            min-width: 140px;
+            flex: 1;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            position: relative;
+        }
+        
+        .team-card::after {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        /* Background Animations */
+        #particles-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .petal {
+            position: absolute;
+            background-color: var(--marigold);
+            border-radius: 150px 0px 150px 0px;
+            box-shadow: 0 0 5px rgba(242, 159, 5, 0.8);
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        .diya {
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            background: #8B4513;
+            border-radius: 0 0 20px 20px;
+            animation: floatUp linear infinite;
+        }
+        .diya::before {
+            content: '';
+            position: absolute;
+            top: -12px; left: 6px;
+            width: 8px; height: 12px;
+            background: #FFD700;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 10px #FF8C00, 0 0 20px #FFD700;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-5vh) rotate(0deg) scale(0.5); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(105vh) rotate(360deg) scale(1); opacity: 0; }
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0.8); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-5vh) scale(1.2); opacity: 0; }
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 15px #FF8C00, 0 0 30px #FFD700; }
+        }
+
+        /* Modal specific */
+        .modal-overlay {
+            backdrop-filter: blur(10px) brightness(0.4);
+            background: rgba(0,0,0,0.7);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative">
+
+    <!-- Background Animation Layer -->
+    <div id="particles-container"></div>
+
+    <!-- SETUP SCREEN -->
+    <div id="setup-screen" class="relative z-10 flex-grow flex items-center justify-center p-6 min-h-screen">
+        <div class="bg-festive-gradient p-10 rounded-2xl gold-border-thick max-w-2xl w-full text-center relative">
+            <!-- Corner Accents -->
+            <div class="absolute top-2 left-2 w-12 h-12 border-t-4 border-l-4 border-yellow-400 rounded-tl-lg opacity-60"></div>
+            <div class="absolute top-2 right-2 w-12 h-12 border-t-4 border-r-4 border-yellow-400 rounded-tr-lg opacity-60"></div>
+            <div class="absolute bottom-2 left-2 w-12 h-12 border-b-4 border-l-4 border-yellow-400 rounded-bl-lg opacity-60"></div>
+            <div class="absolute bottom-2 right-2 w-12 h-12 border-b-4 border-r-4 border-yellow-400 rounded-br-lg opacity-60"></div>
+
+            <h1 class="font-title text-5xl md:text-6xl text-yellow-400 mb-2 drop-shadow-lg tracking-wider">Navratri</h1>
+            <h2 class="font-title text-3xl md:text-4xl text-orange-400 mb-8 drop-shadow-md">Trivia Fest</h2>
+            
+            <div class="mb-8">
+                <label class="block text-2xl font-bold mb-4 text-white font-hand tracking-wide">Number of Participating Teams</label>
+                <div class="flex items-center justify-center gap-6">
+                    <button onclick="changeTeamCount(-1)" class="w-14 h-14 rounded-full btn-marigold font-bold text-3xl flex items-center justify-center shadow-lg">-</button>
+                    <input type="number" id="team-count" min="1" max="6" value="2" readonly
+                           class="w-24 text-center text-4xl p-2 rounded bg-black bg-opacity-40 text-yellow-400 font-title border-2 border-yellow-600 focus:outline-none">
+                    <button onclick="changeTeamCount(1)" class="w-14 h-14 rounded-full btn-marigold font-bold text-3xl flex items-center justify-center shadow-lg">+</button>
+                </div>
+            </div>
+
+            <div id="team-inputs" class="flex flex-col gap-4 mb-10 max-h-64 overflow-y-auto p-4 bg-black bg-opacity-30 rounded-lg gold-border">
+                <!-- Team name inputs injected here -->
+            </div>
+
+            <button onclick="startGame()" class="w-full btn-gold font-title font-bold py-4 px-8 rounded-xl text-3xl tracking-widest uppercase">
+                Let the Festivities Begin
+            </button>
+        </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="hidden relative z-10 flex-col h-screen max-h-screen">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center px-8 py-4 bg-vermilion-gradient border-b-4 border-yellow-500 shadow-2xl relative">
+            <h1 class="font-title text-3xl md:text-4xl text-yellow-400 drop-shadow-md">Navratri Trivia</h1>
+            <div class="font-title text-xl bg-black bg-opacity-50 px-6 py-2 rounded-full border border-yellow-500 flex items-center shadow-inner">
+                <span class="text-gray-300 mr-3">Value at Stake:</span>
+                <span id="active-value" class="text-yellow-400 text-3xl font-bold">0</span>
+            </div>
+        </header>
+
+        <!-- Board -->
+        <main class="flex-grow flex items-center justify-center overflow-y-auto px-4 py-6">
+            <div id="board" class="jeopardy-board">
+                <!-- Grid injected here via JS -->
+            </div>
+        </main>
+
+        <!-- Scoreboard -->
+        <footer class="bg-black bg-opacity-80 border-t-4 border-yellow-500 p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.6)] backdrop-blur-sm z-20">
+            <div id="scoreboard" class="flex flex-wrap justify-center gap-4 max-w-7xl mx-auto">
+                <!-- Team cards injected here via JS -->
+            </div>
+        </footer>
+    </div>
+
+    <!-- QUESTION MODAL -->
+    <div id="question-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-festive-gradient gold-border-thick w-full max-w-6xl rounded-2xl flex flex-col overflow-hidden shadow-2xl relative">
+            
+            <!-- Ornate Modal Background -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: repeating-radial-gradient(circle at center, transparent 0, transparent 40px, #FFD700 41px, transparent 42px); background-size: 100px 100px;"></div>
+
+            <!-- Header -->
+            <div class="bg-black bg-opacity-40 py-5 px-8 flex justify-between items-center border-b-2 border-yellow-600 relative z-10">
+                <span id="modal-theme" class="font-title text-2xl md:text-3xl text-orange-400 uppercase tracking-widest text-shadow-md">Theme</span>
+                <span id="modal-pts" class="font-title text-4xl md:text-5xl text-yellow-400 font-bold drop-shadow-lg">0</span>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-10 md:p-16 flex-grow flex flex-col justify-center items-center min-h-[50vh] relative z-10 text-center">
+                <p id="modal-question" class="text-3xl md:text-5xl font-semibold leading-relaxed mb-10 text-white drop-shadow-xl max-w-4xl font-mukta"></p>
+                
+                <div id="modal-answer-area" class="hidden w-full flex flex-col items-center animation-fade-in">
+                    <div class="w-full h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent mb-8"></div>
+                    <p class="text-xl text-orange-300 font-hand mb-2 tracking-wide">The Answer is:</p>
+                    <p id="modal-answer" class="text-4xl md:text-5xl font-bold text-yellow-400 drop-shadow-xl font-title max-w-4xl"></p>
+                </div>
+            </div>
+
+            <!-- Controls Area -->
+            <div class="bg-black bg-opacity-60 p-6 md:p-8 flex flex-col justify-center items-center gap-6 border-t-2 border-yellow-600 relative z-10">
+                
+                <!-- Reveal Button -->
+                <button id="btn-reveal" onclick="revealAnswer()" 
+                        class="btn-gold font-title font-bold py-4 px-12 rounded-full text-3xl tracking-wide w-full max-w-md">
+                    Reveal Answer
+                </button>
+
+                <!-- Scoring Section (Hidden initially) -->
+                <div id="scoring-section" class="hidden w-full flex flex-col items-center">
+                    <h3 class="text-xl text-yellow-200 font-hand mb-4 tracking-widest border-b border-yellow-600 pb-1">Award Points To:</h3>
+                    <div id="award-buttons" class="flex flex-wrap justify-center gap-4 w-full mb-6">
+                        <!-- Buttons dynamically generated -->
+                    </div>
+                    
+                    <button onclick="closeModal(false, null)" 
+                            class="text-gray-300 hover:text-white border-2 border-gray-600 hover:border-red-500 bg-transparent hover:bg-red-900 bg-opacity-50 font-bold py-3 px-8 rounded-full text-xl transition-all duration-300 w-full max-w-sm tracking-wide">
+                        Nobody got it / Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- GAME DATA (Exact Content Provided) ---
+        const gameData = [
+            {
+                theme: "Gods of cinema",
+                questions: [
+                    { v: 100, q: "This 2008 sci-fi thriller features Kamal Haasan portraying 10 interconnected roles bound by chaos theory.", a: "Dasavathaaram" },
+                    { v: 200, q: "This 1991 cult film modernizes the legendary bond and tragic rivalry between Karna and Arjuna from the Mahabharata.", a: "Thalapathy" },
+                    { v: 300, q: "This milestone 1964 film starred Sivaji Ganesan playing 9 distinct characters, each depicting a different Navarasa.", a: "Navaratri" },
+                    { v: 400, q: "Which South Indian actress holds the record for portraying the divine Goddess Amman / Shakti in the maximum number of South Indian devotional films?", a: "Ramya Krishnan" },
+                    { v: 500, q: "This 1966 classic features a high-stakes divine debate between Goddesses Saraswathi, Lakshmi, and Parvati over whether Knowledge, Wealth, or Strength reigns supreme.", a: "Saraswathi Sabatham" }
+                ]
+            },
+            {
+                theme: "Epic Bonds",
+                questions: [
+                    { v: 100, q: "What is the relationship between Siva and Vishnu?", a: "Brothers in law" },
+                    { v: 200, q: "Name Rama's sons.", a: "Luv and Kush" },
+                    { v: 300, q: "X and Y decided to give birth to Lord Ayyapa to reign the demon Mahishi. Identify X and Y.", a: "Shiva & Vishnu (as Mohini)" },
+                    { v: 400, q: "X is a mythological hindu deity who appears in the state insignia of India, Indonesia and Thailand. X is also in the coat of arms of Indonesia and Thailand. X's nephew is Y who comes in the Ramayana. ID X and Y.", a: "Garuda & Jatayu" },
+                    { v: 500, q: "X and Y are twin brother sisters born Surya (Sun God) and Sanjna, X represents death, Y represents Life. Y also has a river after her name.", a: "Jamuna & Yamaraj" }
+                ]
+            },
+            {
+                theme: "One letter away",
+                questions: [
+                    { v: 100, q: "The supreme ascetic deity who performs the cosmic dance is ______, whereas the central heroine of the Ramayana tested by fire is ______.", a: "Siva, Sita" },
+                    { v: 200, q: "The virtuous hero of the Ramayana was ______, while the mighty king of Lanka who opposed him was ______.", a: "Raman, Ravan" },
+                    { v: 300, q: "The Good king on the bad side of Mahabharata is ______, and the well-wisher of the good side is ______.", a: "Karna, Kanna" },
+                    { v: 400, q: "The destroyer lord associated with Mount Kailash is ______, while the preserver deity who slumbers on the cosmic serpent is ______.", a: "Hara, Hari" },
+                    { v: 500, q: "The invincible monkey king slain by Rama's hidden arrow was ______, whereas the goddess of knowledge and speech is ______.", a: "Vali, Vani" }
+                ]
+            },
+            {
+                theme: "This is how we Navratri",
+                questions: [
+                    { v: 100, q: "The traditional Navratri practice of setting up stepped, multi-tiered wooden platforms to display clay dolls of deities, mythological stories, and village scenes in homes across Tamil Nadu, Andhra Pradesh, and Karnataka.", a: "Golu" },
+                    { v: 200, q: "In West Bengal, the final five days of Navratri culminate in this grand UNESCO-recognized festival featuring elaborate themed temporary shrines (pandals), Dhunuchi Naach dances, and the ritual of Sindoor Khela.", a: "Durga Puja" },
+                    { v: 300, q: "Native to Gujarat, these high-energy folk dances performed in concentric circles around a lit lamp or Goddess idol involve rhythmic clapping during all nine nights.", a: "Garba" },
+                    { v: 400, q: "Celebrated in Karnataka, this royal 10-day state festival highlights Goddess Chamundeshwari slaying Mahishasura and culminates in a grand parade featuring an elephant carrying a 750-kg golden throne.", a: "Mysuru Dasara" },
+                    { v: 500, q: "Across Northern India, this 9-night dramatic open-air performance depicts the life and deeds of Lord Rama based on the Ramcharitmanas, culminating on Dussehra with the burning of giant effigies of Ravana.", a: "Ramlila" }
+                ]
+            },
+            {
+                theme: "Gopuram GeoGuesser",
+                questions: [
+                    { v: 100, q: "Host to show image.", a: "Host to decide" },
+                    { v: 200, q: "Host to show image.", a: "Host to decide" },
+                    { v: 300, q: "Host to show image.", a: "Host to decide" },
+                    { v: 400, q: "Host to show image.", a: "Host to decide" },
+                    { v: 500, q: "Host to show image.", a: "Host to decide" }
+                ]
+            }
+        ];
+
+        // --- STATE VARIABLES ---
+        let teams = [];
+        let currentActiveValue = 0;
+        let currentActiveTile = null;
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            renderTeamInputs();
+            createBackgroundParticles();
+        };
+
+        // --- BACKGROUND ANIMATIONS (Petals & Diyas) ---
+        function createBackgroundParticles() {
+            const container = document.getElementById('particles-container');
+            // Create Petals
+            for(let i=0; i<30; i++) {
+                let petal = document.createElement('div');
+                petal.className = 'petal';
+                let size = Math.random() * 10 + 10; // 10px to 20px
+                petal.style.width = size + 'px';
+                petal.style.height = size + 'px';
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                petal.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(petal);
+            }
+            // Create floating diyas
+            for(let i=0; i<8; i++) {
+                let diya = document.createElement('div');
+                diya.className = 'diya';
+                diya.style.left = Math.random() * 100 + 'vw';
+                diya.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                diya.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(diya);
+            }
+        }
+
+        // --- SETUP LOGIC ---
+        function changeTeamCount(delta) {
+            const input = document.getElementById('team-count');
+            let val = parseInt(input.value) + delta;
+            if(val >= 1 && val <= 8) {
+                input.value = val;
+                renderTeamInputs();
+            }
+        }
+
+        function renderTeamInputs() {
+            const count = parseInt(document.getElementById('team-count').value);
+            const container = document.getElementById('team-inputs');
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                container.innerHTML += `
+                    <div class="flex items-center group">
+                        <span class="text-yellow-400 font-bold w-10 text-xl font-title">${i+1}.</span>
+                        <input type="text" id="team-name-${i}" placeholder="Enter Team Name" 
+                               value="Team ${i+1}"
+                               class="w-full p-3 rounded bg-transparent border-b-2 border-orange-600 text-white text-xl font-semibold focus:outline-none focus:border-yellow-400 transition-colors">
+                    </div>
+                `;
+            }
+        }
+
+        function startGame() {
+            const count = parseInt(document.getElementById('team-count').value);
+            teams = [];
+            for (let i = 0; i < count; i++) {
+                let name = document.getElementById(`team-name-${i}`).value.trim();
+                teams.push({ id: i, name: name || `Team ${i+1}`, score: 0 });
+            }
+
+            // UI Transitions
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('flex');
+
+            buildBoard();
+            renderScoreboard();
+        }
+
+        // --- GAME BOARD LOGIC ---
+        function buildBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+
+            // Render Header Row
+            gameData.forEach(cat => {
+                const header = document.createElement('div');
+                header.className = 'theme-header font-title leading-tight';
+                header.innerText = cat.theme;
+                board.appendChild(header);
+            });
+
+            // Render Tiles (5 rows of 5 categories)
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'question-tile';
+                    tile.innerText = gameData[col].questions[row].v;
+                    
+                    tile.onclick = function() {
+                        openModal(col, row, this);
+                    };
+                    board.appendChild(tile);
+                }
+            }
+        }
+
+        function renderScoreboard() {
+            const scoreboard = document.getElementById('scoreboard');
+            scoreboard.innerHTML = '';
+
+            teams.forEach((team, index) => {
+                const tCard = document.createElement('div');
+                tCard.className = 'team-card flex flex-col justify-center';
+                tCard.innerHTML = `
+                    <h3 class="font-title text-xl text-orange-200 uppercase tracking-widest mb-1 truncate" title="${team.name}">${team.name}</h3>
+                    <div id="score-${index}" class="text-4xl font-bold text-yellow-400 font-title drop-shadow-md">${team.score}</div>
+                    
+                    <!-- Manual +/- controls visible on hover for host corrections -->
+                    <div class="flex justify-center gap-2 mt-2 opacity-0 hover:opacity-100 transition-opacity absolute bottom-1 left-0 w-full">
+                        <button onclick="adjustScore(${index}, 100)" class="text-xs bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded border border-green-500">+</button>
+                        <button onclick="adjustScore(${index}, -100)" class="text-xs bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded border border-red-500">-</button>
+                    </div>
+                `;
+                scoreboard.appendChild(tCard);
+            });
+        }
+
+        function adjustScore(teamIndex, amount) {
+            teams[teamIndex].score += amount;
+            document.getElementById(`score-${teamIndex}`).innerText = teams[teamIndex].score;
+        }
+
+        // --- MODAL & SCORING LOGIC ---
+        function openModal(colIndex, rowIndex, tileElement) {
+            if (tileElement.classList.contains('disabled')) return;
+
+            const data = gameData[colIndex].questions[rowIndex];
+            currentActiveValue = data.v;
+            currentActiveTile = tileElement;
+
+            // Populate Modal
+            document.getElementById('active-value').innerText = currentActiveValue;
+            document.getElementById('modal-theme').innerText = gameData[colIndex].theme;
+            document.getElementById('modal-pts').innerText = currentActiveValue;
+            document.getElementById('modal-question').innerText = data.q;
+            document.getElementById('modal-answer').innerText = data.a;
+
+            // Reset UI states
+            document.getElementById('modal-answer-area').classList.add('hidden');
+            document.getElementById('scoring-section').classList.add('hidden');
+            document.getElementById('btn-reveal').classList.remove('hidden');
+
+            // Show Modal
+            document.getElementById('question-modal').classList.remove('hidden');
+        }
+
+        function revealAnswer() {
+            document.getElementById('btn-reveal').classList.add('hidden');
+            document.getElementById('modal-answer-area').classList.remove('hidden');
+            
+            // Build dynamic award buttons based on current teams
+            const btnContainer = document.getElementById('award-buttons');
+            btnContainer.innerHTML = '';
+            
+            teams.forEach((team, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-marigold font-bold py-3 px-6 rounded-lg text-xl flex-1 min-w-[160px] max-w-[250px] shadow-lg';
+                btn.innerHTML = `<span class="block text-sm font-normal text-yellow-200">Award +${currentActiveValue}</span> <span class="truncate block">${team.name}</span>`;
+                btn.onclick = () => closeModal(true, index);
+                btnContainer.appendChild(btn);
+            });
+
+            document.getElementById('scoring-section').classList.remove('hidden');
+        }
+
+        function closeModal(awardedPoints, teamIndex) {
+            if (awardedPoints && teamIndex !== null && currentActiveValue > 0) {
+                adjustScore(teamIndex, currentActiveValue);
+            }
+
+            // Hide Modal
+            document.getElementById('question-modal').classList.add('hidden');
+            
+            // Mark tile as used
+            if (currentActiveTile) {
+                currentActiveTile.classList.add('disabled');
+                currentActiveTile.innerText = ''; // Clear the number
+                currentActiveTile = null;
+            }
+            
+            // Reset active tracker
+            currentActiveValue = 0;
+            document.getElementById('active-value').innerText = '0';
+        }
+    </script>
+</body>
+</html>
